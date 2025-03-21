@@ -1,0 +1,25 @@
+name: Deploy Docker Mailserver
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚀 Клонируем репозиторий
+        uses: actions/checkout@v3
+
+      - name: 🔑 Подключаемся по SSH
+        run: |
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} "
+            cd ~/docker-mailserver &&
+            git pull &&
+            docker-compose down &&
+            docker-compose up -d
+          "
+
+          
