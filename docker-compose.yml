@@ -28,7 +28,7 @@ mailserver:
     depends_on:
       - mailserver
     ports:
-      - "8080:80"
+      - "9080:80"
     environment:
       - ROUNDCUBEMAIL_DEFAULT_HOST=mail.alexkomendantov.top
       - ROUNDCUBEMAIL_SMTP_SERVER=mail.alexkomendantov.top
