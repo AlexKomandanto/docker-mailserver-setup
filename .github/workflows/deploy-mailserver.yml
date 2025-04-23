@@ -1,4 +1,4 @@
-name: Deploy Docker Mailserver
+name: Deploy Mailserver
 
 on:
   push:
@@ -8,18 +8,17 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: 🚀 Клонируем репозиторий
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: 🔑 Подключаемся по SSH
-        run: |
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} "
-            cd ~/docker-mailserver &&
-            git pull &&
-            docker-compose down &&
-            docker-compose up -d
-          "
-
-          
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd ~/mailserver/docker-mailserver
+            git pull origin main
+            docker-compose down
+            docker-compose up -d --build

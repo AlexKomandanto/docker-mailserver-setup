@@ -1,23 +1,38 @@
-version: "3.8"
-
+version: '3.8'
 services:
-  mailserver:
-    image: mailserver/docker-mailserver:latest
-    container_name: mailserver
-    hostname: mail
-    domainname: alexkomendantov.top
-    environment:
+mailserver:
+  image: mailserver/docker-mailserver:latest
+  container_name: mailserver
+  hostname: mail
+  domainname: alexkomendantov.top
+  environment:
       - ENABLE_SPAMASSASSIN=1
-      - ENABLE_CLAMAV=1
+      - ENABLE_CLAMAV=0
       - ENABLE_FAIL2BAN=1
+      - ENABLE_POSTGREY=0
       - ONE_DIR=1
       - PERMIT_DOCKER=network
-    ports:
-      - "25:25"      
-      - "587:587"    
-      - "993:993"    
-    volumes:
+  ports:
+      - "25:25"
+      - "587:587"
+      - "993:993"
+  volumes:
       - ./mail-data:/var/mail
       - ./mail-state:/var/mail-state
       - ./config:/tmp/docker-mailserver
+  restart: always
+
+  roundcube:
+    image: roundcube/roundcubemail
+    container_name: roundcube
+    depends_on:
+      - mailserver
+    ports:
+      - "8080:80"
+    environment:
+      - ROUNDCUBEMAIL_DEFAULT_HOST=mail.alexkomendantov.top
+      - ROUNDCUBEMAIL_SMTP_SERVER=mail.alexkomendantov.top
+      - ROUNDCUBEMAIL_SMTP_PORT=587
+      - ROUNDCUBEMAIL_IMAP_SERVER=mail.alexkomendantov.top
+      - ROUNDCUBEMAIL_IMAP_PORT=993
     restart: always
