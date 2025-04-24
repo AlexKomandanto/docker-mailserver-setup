@@ -20,6 +20,7 @@ services:
       - ./mail-data:/var/mail
       - ./mail-state:/var/mail-state
       - ./config:/tmp/docker-mailserver
+      - ./mail-logs:/var/log/mail
     restart: always
 
   roundcube:
